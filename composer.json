@@ -1,0 +1,40 @@
+{
+  "name": "robo-meister/flow-beacon-api",
+  "description": "FlowBeacon API PHP SDK for validating Robo account JWTs and intent contexts.",
+  "type": "library",
+  "license": "proprietary",
+  "keywords": [
+    "flowbeacon",
+    "flow-beacon",
+    "robo-meister",
+    "sdk",
+    "api",
+    "jwt"
+  ],
+  "require": {
+    "php": ">=8.2",
+    "ext-json": "*",
+    "firebase/php-jwt": "^7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Robo\\AuthSdk\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Robo\\AuthSdk\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
