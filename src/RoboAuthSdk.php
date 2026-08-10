@@ -78,6 +78,37 @@ final class RoboAuthSdk
     }
 
     /**
+     * Verify and validate a signed V2 execution intent.
+     *
+     * Verification authenticates the exact caller request and correlation
+     * context only; it does not confer authorization or business completion.
+     */
+    public function verifyExecutionIntent(string $jwt, string $expectedOrgId): ExecutionIntentContext
+    {
+        if (trim($expectedOrgId) === '') {
+            throw new RuntimeException('Expected org_id must be non-empty.');
+        }
+
+        $decoded = JWT::decode($jwt, $this->getKeys());
+        $claims = json_decode(json_encode($decoded, JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
+        if (!is_array($claims)) {
+            throw new RuntimeException('Execution intent payload must be an object.');
+        }
+        if (($claims['iss'] ?? null) !== $this->issuer) {
+            throw new RuntimeException('Invalid execution intent issuer.');
+        }
+        $intent = ExecutionIntentContext::fromClaims($claims);
+        if (!hash_equals($expectedOrgId, $intent->organisationId)) {
+            throw new RuntimeException('Execution intent org_id mismatch.');
+        }
+        if ($intent->expiresAt <= time()) {
+            throw new RuntimeException('Execution intent expired.');
+        }
+
+        return $intent;
+    }
+
+    /**
      * Check whether a return URL matches one of the explicitly allowed origins.
      *
      * @param array<int, string> $allowedOrigins
