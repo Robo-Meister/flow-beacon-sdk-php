@@ -36,4 +36,36 @@ foreach ($fixtures as $file) {
     $bad = $wire; $bad['correlation']['flowbeacon_execution_id'] = $bad['correlation']['caller_invocation_id']; rejects($bad);
     $bad = $wire; $bad['error'] = ['code'=>'failure']; rejects($bad);
 }
+// Optional correlation values reach strictly typed constructor arguments.
+// Assert the stable envelope exception AND its original cause, not any Throwable.
+foreach (['flowbeacon_execution_id', 'provider_id', 'model_id'] as $field) {
+    foreach ([['not-a-string'], new stdClass(), 42, 1.5, true, false] as $invalid) {
+        $bad = $wire;
+        $bad['correlation'][$field] = $invalid;
+        try {
+            ExecutionResult::fromArray($bad);
+            throw new RuntimeException('Malformed ' . $field . ' was accepted.');
+        } catch (InvalidArgumentException $expected) {
+            check($expected->getMessage() === 'Malformed execution-result correlation.', 'Wrong normalized error.');
+            check($expected->getPrevious() instanceof TypeError, 'Original TypeError cause was lost.');
+        }
+    }
+}
+foreach (['caller_invocation_id', 'caller_intent_id', 'correlation_id', 'status'] as $field) {
+    $bad = $wire; unset($bad['correlation'][$field]); rejects($bad);
+    foreach ([null, [], new stdClass(), 42, true, ''] as $invalid) {
+        $bad = $wire; $bad['correlation'][$field] = $invalid; rejects($bad);
+    }
+}
+foreach (['provider_id', 'model_id'] as $field) {
+    foreach ([null, 'synthetic-valid-id'] as $valid) {
+        $good = $wire; $good['correlation'][$field] = $valid;
+        $result = ExecutionResult::fromArray($good);
+        check($result->isCompleted(), 'Valid optional identity rejected.');
+        check(($result->toArray()['correlation'][$field] ?? null) === $valid, 'Optional identity changed.');
+    }
+    $good = $wire; unset($good['correlation'][$field]);
+    check(ExecutionResult::fromArray($good)->isCompleted(), 'Absent optional identity rejected.');
+}
+$bad = $wire; $bad['correlation']['flowbeacon_execution_id'] = null; rejects($bad);
 echo "Execution result SDK contract: PASS (3 wire fixtures, round trips and invalid states).\n";

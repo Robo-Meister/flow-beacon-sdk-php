@@ -32,7 +32,11 @@ final readonly class ExecutionResult
             || (isset($value['replayed']) && !is_bool($value['replayed']))) {
             throw new InvalidArgumentException('Unsupported or malformed execution-result envelope.');
         }
-        $correlation = ExecutorResultCorrelation::fromArray($value['correlation']);
+        try {
+            $correlation = ExecutorResultCorrelation::fromArray($value['correlation']);
+        } catch (\TypeError $error) {
+            throw new InvalidArgumentException('Malformed execution-result correlation.', 0, $error);
+        }
         if ($correlation->flowBeaconExecutionId === null
             || !in_array($correlation->status, [...self::PENDING, ...self::SUCCESS, 'failed', 'cancelled'], true)) {
             throw new InvalidArgumentException('Execution result requires a remote identity and known status.');

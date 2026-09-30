@@ -4,6 +4,8 @@ All notable changes to `robo-meister/flow-beacon-api` will be documented in this
 
 ## Unreleased
 
+- Normalize malformed execution-result correlation types to InvalidArgumentException, preserving the TypeError cause; cover optional remote/provider/model IDs and required correlation fields.
+
 - Add negotiated execution-result v1 DTO, pending/error semantics and three cross-repository wire fixtures.
 
 - Add immutable signed execution-intent V2 verification and typed executor-result correlation.
@@ -13,4 +15,3 @@ All notable changes to `robo-meister/flow-beacon-api` will be documented in this
 
 - Prepared the PHP SDK package metadata for Composer/Packagist publishing.
 - Added PHPUnit coverage for JWT verification, intent contexts, and return-to origin checks.
-
