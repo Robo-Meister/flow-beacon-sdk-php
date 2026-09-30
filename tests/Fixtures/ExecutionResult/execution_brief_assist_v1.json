@@ -1,0 +1,32 @@
+{
+  "schema": "flowbeacon.execution-result.v1",
+  "correlation": {
+    "caller_invocation_id": "invocation-1",
+    "caller_intent_id": "intent-1",
+    "correlation_id": "correlation-1",
+    "status": "succeeded",
+    "flowbeacon_execution_id": "remote-fixture-1",
+    "provider_id": "openai",
+    "model_id": "test-model"
+  },
+  "output": {
+    "schema": "platform.execution_brief_assistance.v1",
+    "data": {
+      "schema": "platform.execution_brief_assistance.v1",
+      "summary": "Review proposal",
+      "suggestions": [
+        {
+          "target_type": "task",
+          "target_ref": "task-1",
+          "field": "description",
+          "proposed_value": "Clarify scope",
+          "reason": "Explicit scope"
+        }
+      ],
+      "blockers": [],
+      "uncertainties": []
+    }
+  },
+  "artifacts": [],
+  "error": null
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "flowbeacon.execution-result.v1",
+  "correlation": {
+    "caller_invocation_id": "invocation-1",
+    "caller_intent_id": "intent-1",
+    "correlation_id": "correlation-1",
+    "status": "succeeded",
+    "flowbeacon_execution_id": "remote-fixture-1",
+    "provider_id": "openai",
+    "model_id": "test-model"
+  },
+  "output": {
+    "schema": "law.document_revision_edit_proposal.v1",
+    "data": {
+      "schema": "law.document_revision_edit_proposal.v1",
+      "changes": [
+        {
+          "changeId": "change-1",
+          "operation": "replace",
+          "target": "block-1",
+          "value": "Proposed text"
+        }
+      ]
+    }
+  },
+  "artifacts": [],
+  "error": null
+}

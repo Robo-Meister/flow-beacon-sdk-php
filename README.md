@@ -93,3 +93,8 @@ composer test
 2. Tag a semantic version, for example `v0.1.0`.
 3. Submit the repository or subtree split URL to Packagist with package name `robo-meister/flow-beacon-api`.
 4. Confirm Packagist reads this directory's `composer.json` and that the package page lists the expected autoload namespace.
+
+
+## Structured execution results
+
+See [execution-result contract v1](docs/execution-result-contract-v1.md) and `ExecutionResult::fromArray()` for typed output, pending responses and errors.
