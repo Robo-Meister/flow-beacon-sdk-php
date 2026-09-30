@@ -4,6 +4,8 @@ All notable changes to `robo-meister/flow-beacon-api` will be documented in this
 
 ## Unreleased
 
+- Add negotiated execution-result v1 DTO, pending/error semantics and three cross-repository wire fixtures.
+
 - Add immutable signed execution-intent V2 verification and typed executor-result correlation.
 - Preserve all V1 intent, account-token, and return-origin APIs.
 
@@ -11,3 +13,4 @@ All notable changes to `robo-meister/flow-beacon-api` will be documented in this
 
 - Prepared the PHP SDK package metadata for Composer/Packagist publishing.
 - Added PHPUnit coverage for JWT verification, intent contexts, and return-to origin checks.
+
