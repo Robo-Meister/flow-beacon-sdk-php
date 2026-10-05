@@ -15,3 +15,10 @@ All notable changes to `robo-meister/flow-beacon-api` will be documented in this
 
 - Prepared the PHP SDK package metadata for Composer/Packagist publishing.
 - Added PHPUnit coverage for JWT verification, intent contexts, and return-to origin checks.
+
+
+## Unreleased — governed execution input
+
+- Add role-preserving ExecutionInput and safe ExecutionEvidence contracts.
+- Preserve optional negotiated execution provenance in ExecutionResult without changing historical envelopes.
+- Add four-profile fixtures and dependency-free contract checks.

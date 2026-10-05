@@ -1,0 +1,139 @@
+{
+  "schema": "flowbeacon.execution-evidence.v1",
+  "input_contract": "flowbeacon.execution-input.v1",
+  "profile": {
+    "id": "governed-text",
+    "version": "2026-10-05.1",
+    "provider": "openai",
+    "api": "responses",
+    "model": "gpt-4.1-mini-2025-04-14",
+    "capabilities": [
+      "structured_outputs"
+    ],
+    "max_output_tokens": 4096,
+    "store": false,
+    "timeout_seconds": 30,
+    "technical_task": {
+      "key": "execution_brief_assist_v1",
+      "version": "2026-09-24.1"
+    },
+    "output_schema": {
+      "$defs": {
+        "Blocker": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "gate",
+                "dependency",
+                "risk",
+                "regulation",
+                "planning_gap"
+              ],
+              "type": "string"
+            },
+            "source_ref": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "impact": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "source_ref",
+            "description",
+            "impact"
+          ],
+          "type": "object"
+        },
+        "Suggestion": {
+          "additionalProperties": false,
+          "properties": {
+            "target_type": {
+              "enum": [
+                "task",
+                "project"
+              ],
+              "type": "string"
+            },
+            "target_ref": {
+              "type": "string"
+            },
+            "field": {
+              "type": "string"
+            },
+            "proposed_value": {
+              "type": "string"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "target_type",
+            "target_ref",
+            "field",
+            "proposed_value",
+            "reason"
+          ],
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": [
+            "platform.execution_brief_assistance.v1"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "suggestions": {
+          "items": {
+            "$ref": "#/$defs/Suggestion"
+          },
+          "type": "array"
+        },
+        "blockers": {
+          "items": {
+            "$ref": "#/$defs/Blocker"
+          },
+          "type": "array"
+        },
+        "uncertainties": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema",
+        "summary",
+        "suggestions",
+        "blockers",
+        "uncertainties"
+      ],
+      "type": "object"
+    },
+    "digest": "2bfd81dcf839bc47c6d0d158905ec7aff998b473e56d10080fa5556216df9c54"
+  },
+  "attempt": {
+    "number": 1,
+    "request_id": "req_test",
+    "response_id": "resp_test",
+    "model": "gpt-4.1-mini-2025-04-14",
+    "status": "completed",
+    "usage": {
+      "input_tokens": 12,
+      "output_tokens": 24,
+      "total_tokens": 36
+    }
+  }
+}
