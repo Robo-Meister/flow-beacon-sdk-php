@@ -24,7 +24,8 @@ final readonly class ExecutionEvidence
             if (!is_array($profile)) throw new InvalidArgumentException('Invalid execution profile.');
             self::keys($profile, ['id', 'version', 'provider', 'api', 'model', 'capabilities', 'max_output_tokens', 'store', 'timeout_seconds', 'technical_task', 'output_schema', 'digest']);
             foreach (['id', 'version', 'model'] as $key) self::text($profile[$key]);
-            if ($profile['provider'] !== 'openai' || $profile['api'] !== 'responses' || $profile['store'] !== false
+            $supportedApis = ['openai' => 'responses', 'anthropic' => 'messages'];
+            if (!is_string($profile['provider']) || ($supportedApis[$profile['provider']] ?? null) !== $profile['api'] || $profile['store'] !== false
                 || $profile['capabilities'] !== ['structured_outputs']
                 || !is_int($profile['max_output_tokens']) || $profile['max_output_tokens'] < 1 || $profile['max_output_tokens'] > 32768
                 || !is_int($profile['timeout_seconds']) || $profile['timeout_seconds'] < 1 || $profile['timeout_seconds'] > 120

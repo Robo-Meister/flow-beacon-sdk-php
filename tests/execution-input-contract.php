@@ -33,6 +33,19 @@ foreach ($fixtures as $fixture) {
 }
 $evidence = json_decode(file_get_contents(__DIR__ . '/Fixtures/execution-evidence-v1.json'), true, 512, JSON_THROW_ON_ERROR);
 checkInput(ExecutionEvidence::fromArray($evidence)->toArray() === $evidence, 'Evidence changed in round trip.');
+$claude = $evidence;
+$claude['profile']['provider'] = 'anthropic';
+$claude['profile']['api'] = 'messages';
+$claude['profile']['model'] = 'claude-sonnet-4-5-20250929';
+$claude['attempt']['model'] = $claude['profile']['model'];
+$claude['attempt']['response_id'] = 'msg_test_claude';
+checkInput(ExecutionEvidence::fromArray($claude)->toArray() === $claude, 'Anthropic evidence changed in round trip.');
+foreach ([['anthropic', 'responses'], ['openai', 'messages'], ['unsupported', 'messages']] as [$provider, $api]) {
+    $bad = $claude;
+    $bad['profile']['provider'] = $provider;
+    $bad['profile']['api'] = $api;
+    rejectInput(fn () => ExecutionEvidence::fromArray($bad));
+}
 $bad = $evidence; $bad['attempt']['credential'] = 'must-not-pass'; rejectInput(fn () => ExecutionEvidence::fromArray($bad));
 $bad = $evidence; $bad['attempt']['usage']['total_tokens'] = -1; rejectInput(fn () => ExecutionEvidence::fromArray($bad));
 $bad = $evidence; $bad['profile']['store'] = true; rejectInput(fn () => ExecutionEvidence::fromArray($bad));
@@ -40,4 +53,8 @@ $result = json_decode(file_get_contents(__DIR__ . '/Fixtures/ExecutionResult/exe
 checkInput(!array_key_exists('execution', ExecutionResult::fromArray($result)->toArray()), 'Historical result changed.');
 $result['execution'] = $evidence;
 checkInput(ExecutionResult::fromArray($result)->toArray()['execution'] === $evidence, 'Result lost evidence.');
+$result['execution'] = $claude;
+$result['correlation']['provider_id'] = 'anthropic';
+$result['correlation']['model_id'] = $claude['profile']['model'];
+checkInput(ExecutionResult::fromArray($result)->toArray()['execution'] === $claude, 'Result lost Anthropic evidence.');
 echo "execution-input/evidence contracts: PASS (four profiles, legacy, malformed inputs)\n";
