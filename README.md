@@ -98,3 +98,9 @@ composer test
 ## Structured execution results
 
 See [execution-result contract v1](docs/execution-result-contract-v1.md) and `ExecutionResult::fromArray()` for typed output, pending responses and errors.
+
+Execution evidence accepts the explicit provider/API pairs `openai` / `responses`
+and `anthropic` / `messages`. The same bounded, credential-free evidence contract
+applies to both. Other provider/API pairs are rejected; model authorization,
+native output validation, provider retention settings and retry policy remain
+FlowBeacon runtime responsibilities.
