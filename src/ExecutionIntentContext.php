@@ -37,6 +37,7 @@ final readonly class ExecutionIntentContext
         public int $issuedAt,
         public int $expiresAt,
         public array $decisionRefs = [],
+        public ?ExecutionBoundary $boundary = null,
     ) {
         if ($contractVersion !== self::CONTRACT_VERSION) {
             throw new InvalidArgumentException(sprintf('Unsupported execution intent contract version %s.', $contractVersion));
@@ -89,6 +90,10 @@ final readonly class ExecutionIntentContext
             throw new InvalidArgumentException('decision_refs must be a list when supplied.');
         }
 
+        $boundary = array_key_exists('execution_boundary', $claims)
+            ? ExecutionBoundary::fromArray(is_array($claims['execution_boundary']) ? $claims['execution_boundary'] : []) : null;
+        $boundary?->assertClaims($claims);
+
         return new self(
             $claims['contract_version'], $claims['intent_id'], $claims['invocation_id'], $claims['org_id'],
             $claims['workspace_id'] ?? null, WorkRef::fromArray($claims['work_ref']),
@@ -99,6 +104,7 @@ final readonly class ExecutionIntentContext
             $claims['causation_id'] ?? null, $claims['execution_root_id'] ?? null,
             $claims['parent_execution_id'] ?? null, $claims['idempotency_key'], $issuedAt, $expiresAt,
             $decisionRefs,
+            $boundary,
         );
     }
 

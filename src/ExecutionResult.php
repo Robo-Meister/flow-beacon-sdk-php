@@ -20,6 +20,7 @@ final readonly class ExecutionResult
         public ?array $error,
         public bool $replayed,
         public ?ExecutionEvidence $execution = null,
+        public ?array $boundary = null,
     ) {}
 
     /** Parse a decoded wire object. No LLM text extraction or domain validation. */
@@ -75,7 +76,22 @@ final readonly class ExecutionResult
             if (!is_array($value['execution'])) throw new InvalidArgumentException('Malformed execution evidence.');
             $execution = ExecutionEvidence::fromArray($value['execution']);
         }
-        return new self($correlation, $output['schema'] ?? null, $output['data'] ?? null, $error, $value['replayed'] ?? false, $execution);
+        $boundary = $value['boundary'] ?? null;
+        if (array_key_exists('boundary', $value)) {
+            if (!is_array($boundary)) throw new InvalidArgumentException('Malformed boundary receipt.');
+            $keys = array_keys($boundary); sort($keys);
+            if ($keys !== ['digest', 'id', 'policy_version', 'schema'] || $boundary['schema'] !== ExecutionBoundary::RECEIPT_SCHEMA
+                || !is_string($boundary['digest']) || preg_match('/^[0-9a-f]{64}$/D', $boundary['digest']) !== 1) {
+                throw new InvalidArgumentException('Malformed boundary receipt.');
+            }
+            foreach (['id', 'policy_version'] as $key) {
+                if (!is_string($boundary[$key]) || trim($boundary[$key]) === '' || strlen($boundary[$key]) > 255
+                    || preg_match('//u', $boundary[$key]) !== 1 || preg_match('/[\x00-\x1F\x7F]/', $boundary[$key])) {
+                    throw new InvalidArgumentException('Malformed boundary receipt.');
+                }
+            }
+        }
+        return new self($correlation, $output['schema'] ?? null, $output['data'] ?? null, $error, $value['replayed'] ?? false, $execution, $boundary);
     }
 
     public function isPending(): bool { return in_array($this->correlation->status, self::PENDING, true); }
@@ -91,7 +107,8 @@ final readonly class ExecutionResult
             'artifacts' => [],
             'error' => $this->error,
             'replayed' => $this->replayed,
-        ] + ($this->execution === null ? [] : ['execution' => $this->execution->toArray()]);
+        ] + ($this->execution === null ? [] : ['execution' => $this->execution->toArray()])
+            + ($this->boundary === null ? [] : ['boundary' => $this->boundary]);
     }
 }
 
