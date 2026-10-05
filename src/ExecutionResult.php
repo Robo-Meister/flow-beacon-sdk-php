@@ -19,6 +19,7 @@ final readonly class ExecutionResult
         public ?array $outputData,
         public ?array $error,
         public bool $replayed,
+        public ?ExecutionEvidence $execution = null,
     ) {}
 
     /** Parse a decoded wire object. No LLM text extraction or domain validation. */
@@ -69,7 +70,12 @@ final readonly class ExecutionResult
             throw new InvalidArgumentException('Only a failed execution may contain an error.');
         }
 
-        return new self($correlation, $output['schema'] ?? null, $output['data'] ?? null, $error, $value['replayed'] ?? false);
+        $execution = null;
+        if (array_key_exists('execution', $value)) {
+            if (!is_array($value['execution'])) throw new InvalidArgumentException('Malformed execution evidence.');
+            $execution = ExecutionEvidence::fromArray($value['execution']);
+        }
+        return new self($correlation, $output['schema'] ?? null, $output['data'] ?? null, $error, $value['replayed'] ?? false, $execution);
     }
 
     public function isPending(): bool { return in_array($this->correlation->status, self::PENDING, true); }
@@ -85,6 +91,7 @@ final readonly class ExecutionResult
             'artifacts' => [],
             'error' => $this->error,
             'replayed' => $this->replayed,
-        ];
+        ] + ($this->execution === null ? [] : ['execution' => $this->execution->toArray()]);
     }
 }
+
